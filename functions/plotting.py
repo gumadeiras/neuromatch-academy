@@ -35,9 +35,11 @@ def plot_average_activity_neurons_all_trials(neurons_spks, region, sort=True):
     else:
         plt.imshow(avg_activity, cmap='gray_r', alpha=1);
 #         plt.colorbar()
+    plt.axvline(50, color="limegreen", label="stimulus onset")
     plt.title(f"avg activity; region: {region}")
     plt.xlabel("time bin")
     plt.ylabel(f"neuron")
+    plt.legend()
     plt.show()
         
 def plot_average_activity_neurons_in_regions(data, regions, sort=True):
@@ -57,18 +59,26 @@ def plot_average_activity_neurons_in_regions(data, regions, sort=True):
         else:
             plt.imshow(avg_activity, cmap='gray_r', alpha=1);
 #         plt.colorbar()
+        plt.axvline(50, color="limegreen", label="stimulus onset")
         plt.title(f"avg activity; region: {region}")
         plt.xlabel("time bin")
         plt.ylabel(f"neuron")
+        plt.legend()
         plt.show()
         
-def plot_per_trial_activity(neurons_spks, region):
+def plot_per_trial_activity(neurons_spks, region, gocue=None, response_time=None):
     neurons_count = neurons_spks.shape[0]
     for neuron in range(neurons_count):
         fig = plt.figure(dpi=150)
         plt.imshow(neurons_spks[neuron], cmap='gray_r', alpha=1);
         plt.colorbar()
+        if gocue is not None:
+            plt.imshow(gocue[neuron], cmap='magma', alpha=0.25);
+        if response_time is not None:
+            plt.imshow(response_time[neuron], cmap='magma', alpha=0.25);
+        plt.axvline(50, color="limegreen", label="stimulus onset")
         plt.xlabel("time bin")
         plt.ylabel(f"neuron {neuron}; trials")
         plt.title(f"per trial activity; region: {region}")
+        plt.legend()
         plt.show()

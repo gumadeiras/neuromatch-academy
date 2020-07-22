@@ -31,3 +31,15 @@ def regions_recorded_per_animal(data):
         recorded_regions.append([idx, list(zip(regions, count))])
 
     return np.vstack(recorded_regions)
+
+
+def get_times_for_neuron(neurons_spks, times, stim_onset=50):
+    # generates a neurons_spks-like array with 1 where times happens and 0 everywhere else
+    neurons_count = neurons_spks.shape[0]
+    trials_count = neurons_spks.shape[1]
+    neurons_responses = np.zeros_like(neurons_spks)
+    response_time_bins = np.asarray((times*10)+stim_onset).ravel().astype(np.int)
+    for neuron in range(neurons_count):
+        for trial in range(trials_count):
+            neurons_responses[neuron][trial][response_time_bins[trial]] = 1
+    return neurons_responses
