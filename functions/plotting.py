@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.ndimage import gaussian_filter1d
 
 def plot_spiking_histogram_neurons_all_trials(neurons_spks, region, bins=50):
     neurons_count = neurons_spks.shape[0]
@@ -22,7 +23,7 @@ def plot_spiking_histogram_neurons_in_regions(data, regions, bins=50):
         plt.ylabel("number of neurons")
         plt.show()
 
-def plot_average_activity_neurons_all_trials(neurons_spks, region, sort=True):
+def plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=2, sort=True):
     avg_activity = np.mean(neurons_spks, axis=1)
     total_act = np.sum(avg_activity, axis=1)
 
@@ -31,7 +32,7 @@ def plot_average_activity_neurons_all_trials(neurons_spks, region, sort=True):
     # sort by total activity
     if sort:
         avg_acitivity_sorted = [x for _,x in sorted(zip(total_act,np.arange(0,avg_activity.shape[0])))]
-        plt.imshow(avg_activity[avg_acitivity_sorted], cmap='gray_r', alpha=1);
+        plt.imshow(gaussian_filter1d(avg_activity[avg_acitivity_sorted], sigma, axis=1), cmap='gray_r', alpha=1);
     else:
         plt.imshow(avg_activity, cmap='gray_r', alpha=1);
 #         plt.colorbar()
@@ -42,7 +43,7 @@ def plot_average_activity_neurons_all_trials(neurons_spks, region, sort=True):
     plt.legend()
     plt.show()
         
-def plot_average_activity_neurons_in_regions(data, regions, sort=True):
+def plot_average_activity_neurons_in_regions(data, regions, sigma=2, sort=True):
     for region in regions:
         neurons = data['brain_area'] == region
         neurons_spks = data['spks'][neurons]
@@ -55,9 +56,9 @@ def plot_average_activity_neurons_in_regions(data, regions, sort=True):
         # sort by total activity
         if sort:
             avg_acitivity_sorted = [x for _,x in sorted(zip(total_act,np.arange(0,avg_activity.shape[0])))]
-            plt.imshow(avg_activity[avg_acitivity_sorted], cmap='gray_r', alpha=1);
+            plt.imshow(gaussian_filter1d(avg_activity[avg_acitivity_sorted], sigma, axis=1), cmap='gray_r', alpha=1);
         else:
-            plt.imshow(avg_activity, cmap='gray_r', alpha=1);
+            plt.imshow(gaussian_filter1d(avg_activity, sigma, axis=1), cmap='gray_r', alpha=1);
 #         plt.colorbar()
         plt.axvline(50, color="limegreen", label="stimulus onset")
         plt.title(f"avg activity; region: {region}")
