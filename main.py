@@ -22,7 +22,7 @@ sigmas = [0.1, 1.0 , 2.0]
 cr_top10 = ["ZI", "APN", "MRN", "SCm", "PO", "LD", "SNr", "SSp", "MOp", "MOs"]
 cr_others = ["SCs", "MG", "VPM", "VPL", "MD","CP", "PL", "ACA", "RSP", "VISam"]
 n_bins = 50
-root_folder = join('./spiking_histogram_neurons_all_trials', ('top10' if is_top else 'others'))
+root_folder = join('./average_activity_neurons_all_trials', ('top10' if is_top else 'others'))
 
 
 if is_top:
@@ -37,10 +37,11 @@ for region in regions:
         neurons = dat['brain_area'] == region
         neurons_spks = dat['spks'][neurons]
         
-        save_path = join(root_folder, region) + '_spiking_histogram_neurons_all_trials.png'
-        plot_spiking_histogram_neurons_all_trials(neurons_spks, region, bins=n_bins, save_path=save_path, save=is_save)
-        
-        #for sigma in sigmas:
-        #    plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=sigma)
-        #plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=1)
-        #plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=2)
+        ## First plot
+        #save_path = join(root_folder, region) + '_spiking_histogram_neurons_all_trials.png'
+        #plot_spiking_histogram_neurons_all_trials(neurons_spks, region, bins=n_bins, save_path=save_path, save=is_save)
+
+        ## Second plot
+        for sigma in sigmas:
+            save_path = join(root_folder, region) + '_average_activity_neurons_all_trials_' + str(sigma) + '.png'
+            plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=sigma, save_path=save_path, save=is_save)
