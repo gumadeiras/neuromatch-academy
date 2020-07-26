@@ -95,3 +95,23 @@ def plot_per_trial_activity(neurons_spks, region, gocue=None, response_time=None
         plt.title(f"per trial activity; region: {region}")
         plt.legend()
         plt.show()
+
+def psth(neurons_spks, region, timebin_size=1):
+    total_activity = np.sum(neurons_spks, axis=1)
+    total_activity = np.sum(total_activity, axis=0)
+    
+    # combine bins according to timebin_size
+    tas = total_activity.shape[0]
+    total_activity = total_activity.reshape([tas//timebin_size, -1])
+    total_activity = np.sum(total_activity, axis=1)
+    
+    fig = plt.figure(dpi=150)
+
+    plt.bar(np.arange(total_activity.shape[0]), total_activity)
+    plt.axvline(50//timebin_size, color="limegreen", label="stimulus onset")
+    plt.title(f"PSTH; region: {region}")
+    plt.xlabel("time bin")
+    plt.ylabel(f"spike count")
+    plt.ylim([np.min(total_activity), np.max(total_activity)*1.25])
+    plt.legend()
+    plt.show()
