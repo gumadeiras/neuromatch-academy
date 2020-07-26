@@ -14,28 +14,28 @@ if __name__ == '__main__':
     # Argument Parser
     args = argument_parser()
 
-    is_top = True
-    is_save = True
+    is_top = args.top_choice
+    is_save = args.save
+    n_bins = args.n_bins
+    n_trials_plot = args.n_trials
+    gaussian_filter_sigma = args.sigma
+    wheel_to_mm = args.wheel_to_mm
+    
     sigmas = [0.1, 1.0 , 2.0]
+    
+    ## Choice Regions
     cr_top10 = ["ZI", "APN", "MRN", "SCm", "PO", "LD", "SNr", "SSp", "MOp", "MOs"]
     cr_others = ["SCs", "MG", "VPM", "VPL", "MD","CP", "PL", "ACA", "RSP", "VISam"]
-    n_bins = 50
-    wheel_to_mm = 0.135
-    n_trials_plot = 10
-    gaussian_filter_sigma = 3
+    regions = cr_top10 if is_top else cr_others
     root_folder = join('./psth_combined', ('top10' if is_top else 'others'))
 
-    # load data from steinmetz dir
+    # Load data from Steinmetz dir
     alldat = np.load('./steinmetz/steinmetz_part0.npz', allow_pickle=True)['dat']
     alldat = np.hstack((alldat, np.load('./steinmetz/steinmetz_part1.npz', allow_pickle=True)['dat']))
     alldat = np.hstack((alldat, np.load('./steinmetz/steinmetz_part2.npz', allow_pickle=True)['dat']))
     print("Number of Recordings: {r_shape}".format(r_shape = alldat.shape))
     
-    if is_top:
-        regions = cr_top10
-    else:
-        regions = cr_others
-
+    
     '''
     for region in regions:
         rwr = recordings_with_region(alldat, region)
