@@ -112,3 +112,12 @@ def psth(neurons_spks, region, timebin_size=1, save_path='./data.png', save=Fals
     plt.ylim([np.min(total_activity), np.max(total_activity)*1.25])
     plt.legend()
     save_or_plot(save_path, save)
+
+def plot_wheel_movement(trial, wheel_to_mm=0.135, sigma=3):
+    plt.plot(gaussian_filter1d(trial*wheel_to_mm, 3))
+    plt.axvline(50, color="limegreen", label="stimulus onset")
+    plt.xlabel("time bin")
+    plt.ylabel(f"wheel position (mm)")
+    plt.title(f"wheel position x time")
+    plt.legend()
+    plt.show()
