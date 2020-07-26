@@ -2,14 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
 
-def plot_spiking_histogram_neurons_all_trials(neurons_spks, region, bins=50, save_path='./data.png', save=False):
-    neurons_count = neurons_spks.shape[0]
-    spks_per_trial = [np.sum(neurons_spks[neuron]) for neuron in range(neurons_count)]
-    plt.hist(spks_per_trial, bins=bins);
-    plt.xlabel("total number of spikes")
-    plt.ylabel("number of neurons")
-    plt.title(f"spiking activity; region: {region}")
-    
+def save_or_plot(save_path, save):
     if(save):
         plt.draw()
         plt.savefig(save_path, bbox_inches='tight', pad_inches=0)
@@ -17,7 +10,17 @@ def plot_spiking_histogram_neurons_all_trials(neurons_spks, region, bins=50, sav
     else:
         plt.show()
 
-def plot_spiking_histogram_neurons_in_regions(data, regions, bins=50):
+def plot_spiking_histogram_neurons_all_trials(neurons_spks, region, bins=50, save_path='./data.png', save=False):
+    neurons_count = neurons_spks.shape[0]
+    spks_per_trial = [np.sum(neurons_spks[neuron]) for neuron in range(neurons_count)]
+    plt.hist(spks_per_trial, bins=bins);
+    plt.xlabel("total number of spikes")
+    plt.ylabel("number of neurons")
+    plt.title(f"spiking activity; region: {region}")
+    save_or_plot(save_path, save)
+
+
+def plot_spiking_histogram_neurons_in_regions(data, regions, bins=50, save_path='./data.png', save=False):
     for region in regions:
         neurons = data['brain_area'] == region
         neurons_spks = data['spks'][neurons]
@@ -27,7 +30,7 @@ def plot_spiking_histogram_neurons_in_regions(data, regions, bins=50):
         plt.title(f"region: {region}")
         plt.xlabel("total number of spikes")
         plt.ylabel("number of neurons")
-        plt.show()
+        save_or_plot(save_path, save)
 
 def plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=2, sort=True, save_path='./data.png', save=False):
     avg_activity = np.mean(neurons_spks, axis=1)
@@ -47,15 +50,9 @@ def plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=2, sort
     plt.xlabel("time bin")
     plt.ylabel(f"neuron")
     plt.legend()
-
-    if(save):
-        plt.draw()
-        plt.savefig(save_path, bbox_inches='tight', pad_inches=0)
-        plt.close()
-    else:
-        plt.show()
+    save_or_plot(save_path, save)
         
-def plot_average_activity_neurons_in_regions(data, regions, sigma=2, sort=True):
+def plot_average_activity_neurons_in_regions(data, regions, sigma=2, sort=True, save_path='./data.png', save=False):
     for region in regions:
         neurons = data['brain_area'] == region
         neurons_spks = data['spks'][neurons]
@@ -77,9 +74,9 @@ def plot_average_activity_neurons_in_regions(data, regions, sigma=2, sort=True):
         plt.xlabel("time bin")
         plt.ylabel(f"neuron")
         plt.legend()
-        plt.show()
+        save_or_plot(save_path, save)
         
-def plot_per_trial_activity(neurons_spks, region, gocue=None, response_time=None):
+def plot_per_trial_activity(neurons_spks, region, gocue=None, response_time=None, save_path='./data.png', save=False):
     neurons_count = neurons_spks.shape[0]
     for neuron in range(neurons_count):
         fig = plt.figure(dpi=150)
@@ -94,9 +91,9 @@ def plot_per_trial_activity(neurons_spks, region, gocue=None, response_time=None
         plt.ylabel(f"neuron {neuron}; trials")
         plt.title(f"per trial activity; region: {region}")
         plt.legend()
-        plt.show()
+        save_or_plot(save_path, save)
 
-def psth(neurons_spks, region, timebin_size=1):
+def psth(neurons_spks, region, timebin_size=1, save_path='./data.png', save=False):
     total_activity = np.sum(neurons_spks, axis=1)
     total_activity = np.sum(total_activity, axis=0)
     
@@ -114,4 +111,4 @@ def psth(neurons_spks, region, timebin_size=1):
     plt.ylabel(f"spike count")
     plt.ylim([np.min(total_activity), np.max(total_activity)*1.25])
     plt.legend()
-    plt.show()
+    save_or_plot(save_path, save)
