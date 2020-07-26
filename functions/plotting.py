@@ -93,8 +93,8 @@ def plot_per_trial_activity(neurons_spks, region, gocue=None, response_time=None
         plt.legend()
         save_or_plot(save_path, save)
 
-def psth(neurons_spks, region, timebin_size=1, save_path='./data.png', save=False):
-    total_activity = np.sum(neurons_spks, axis=1)
+def psth(neurons_spks, region, timebin_size=1, func=np.mean, sigma=3, save_path='./data.png', save=False):
+    total_activity = func(neurons_spks, axis=1)
     total_activity = np.sum(total_activity, axis=0)
     
     # combine bins according to timebin_size
@@ -104,12 +104,41 @@ def psth(neurons_spks, region, timebin_size=1, save_path='./data.png', save=Fals
     
     fig = plt.figure(dpi=150)
 
-    plt.bar(np.arange(total_activity.shape[0]), total_activity)
+    plt.step(np.arange(total_activity.shape[0]), gaussian_filter1d(total_activity, sigma))
     plt.axvline(50//timebin_size, color="limegreen", label="stimulus onset")
     plt.title(f"PSTH; region: {region}")
     plt.xlabel("time bin")
     plt.ylabel(f"spike count")
     plt.ylim([np.min(total_activity), np.max(total_activity)*1.25])
+    plt.legend()
+    save_or_plot(save_path, save)
+
+def psth_combined(alldat, region, timebin_size=1, func=np.mean, sigma=3, save_path='./data.png', save=False):
+    fig = plt.figure(dpi=150)
+    tas_max = 0
+    mmax = 0
+    for dat in alldat:
+        neurons = dat['brain_area'] == region
+        neurons_spks = dat['spks'][neurons]
+        neurons_count = neurons_spks.shape[0]
+        total_neurons_count = dat['spks'].shape[0]
+        trials_count = dat['spks'].shape[1]
+        if neurons_count > 1:
+            total_activity = func(neurons_spks, axis=1)
+            total_activity = np.sum(total_activity, axis=0)
+            # combine bins according to timebin_size
+            tas = total_activity.shape[0]
+            total_activity = total_activity.reshape([tas//timebin_size, -1])
+            total_activity = np.sum(total_activity, axis=1)
+            tas_max = np.max(total_activity)
+            
+            plt.step(np.arange(total_activity.shape[0]), gaussian_filter1d(total_activity, sigma), label=dat['mouse_name'])
+        mmax = tas_max if tas_max > mmax else mmax
+    plt.axvline(50//timebin_size, color="limegreen", label="stimulus onset")
+    plt.title(f"PSTH; region: {region}")
+    plt.xlabel("time bin")
+    plt.ylabel(f"spike count")
+    plt.ylim([0, mmax])
     plt.legend()
     save_or_plot(save_path, save)
 
