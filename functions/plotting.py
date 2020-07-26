@@ -142,11 +142,11 @@ def psth_combined(alldat, region, timebin_size=1, func=np.mean, sigma=3, save_pa
     plt.legend()
     save_or_plot(save_path, save)
 
-def plot_wheel_movement(trial, wheel_to_mm=0.135, sigma=3):
+def plot_wheel_movement(trial, wheel_to_mm=0.135, sigma=3, save_path='./data.png', save=False):
     plt.plot(gaussian_filter1d(trial*wheel_to_mm, 3))
     plt.axvline(50, color="limegreen", label="stimulus onset")
     plt.xlabel("time bin")
     plt.ylabel(f"wheel position (mm)")
     plt.title(f"wheel position x time")
     plt.legend()
-    plt.show()
+    save_or_plot(save_path, save)
