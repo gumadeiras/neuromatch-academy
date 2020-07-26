@@ -14,13 +14,7 @@ if __name__ == '__main__':
     # Argument Parser
     args = argument_parser()
 
-    # load data from steinmetz dir
-    alldat = np.load('./steinmetz/steinmetz_part0.npz', allow_pickle=True)['dat']
-    alldat = np.hstack((alldat, np.load('./steinmetz/steinmetz_part1.npz', allow_pickle=True)['dat']))
-    alldat = np.hstack((alldat, np.load('./steinmetz/steinmetz_part2.npz', allow_pickle=True)['dat']))
-    print("Number of Recordings: {r_shape}".format(r_shape = alldat.shape))
-
-    is_top = False
+    is_top = True
     is_save = True
     sigmas = [0.1, 1.0 , 2.0]
     cr_top10 = ["ZI", "APN", "MRN", "SCm", "PO", "LD", "SNr", "SSp", "MOp", "MOs"]
@@ -29,14 +23,20 @@ if __name__ == '__main__':
     wheel_to_mm = 0.135
     n_trials_plot = 10
     gaussian_filter_sigma = 3
-    root_folder = join('./average_activity_neurons_all_trials', ('top10' if is_top else 'others'))
+    root_folder = join('./psth_combined', ('top10' if is_top else 'others'))
 
+    # load data from steinmetz dir
+    alldat = np.load('./steinmetz/steinmetz_part0.npz', allow_pickle=True)['dat']
+    alldat = np.hstack((alldat, np.load('./steinmetz/steinmetz_part1.npz', allow_pickle=True)['dat']))
+    alldat = np.hstack((alldat, np.load('./steinmetz/steinmetz_part2.npz', allow_pickle=True)['dat']))
+    print("Number of Recordings: {r_shape}".format(r_shape = alldat.shape))
     
     if is_top:
         regions = cr_top10
     else:
         regions = cr_others
 
+    '''
     for region in regions:
         rwr = recordings_with_region(alldat, region)
         for recording, __ in rwr:
@@ -56,23 +56,31 @@ if __name__ == '__main__':
             for sigma in sigmas:
                 save_path = join(root_folder, region) + '_average_activity_neurons_all_trials_' + str(sigma) + '.png'
                 plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=sigma, save_path=save_path, save=is_save)
-
     '''
+
+    
     for region in regions:
-        for idx_animal, dat in enumerate(alldat):
-            ## PSTH Plot ## 
-            # save_path = join(root_folder, region) + '_psth.png'
-            # if neurons_count > 1:
-            #     psth(neurons_spks, region, timebin_size=5, save_path=save_path, save=is_save)
 
-            # Wheel Movement Plot ##
-            # wheel_act = dat['wheel'].squeeze()
-            # for idx_trial, trial in enumerate(wheel_act[:n_trials_plot]):
-            #     save_path = join(root_folder, region) + '_animal_'+ str(idx_animal) + '_trial_' + str(idx_trial)+ '.png'
-            #     plot_wheel_movement(trial, 
-            #                         wheel_to_mm=wheel_to_mm, 
-            #                         sigma=gaussian_filter_sigma,
-            #                         title='wheel position x time Animal: ' + str(idx_animal) + ' Trial: ' + str(idx_trial), 
-            #                         save_path=save_path, save=is_save)
+        ## PSTH Combined Plot ## 
+        save_path = join(root_folder, region) + '_psth_combined.png'
+        psth_combined(alldat, region, timebin_size=5, save_path=save_path, save=is_save) 
 
-    '''
+        # for idx_animal, dat in enumerate(alldat):
+        #     ## PSTH Plot ## 
+        #     # save_path = join(root_folder, region) + '_psth.png'
+        #     # if neurons_count > 1:
+        #     #     psth(neurons_spks, region, timebin_size=5, save_path=save_path, save=is_save)
+        # 
+        #     # Wheel Movement Plot ##
+        #     # wheel_act = dat['wheel'].squeeze()
+        #     # for idx_trial, trial in enumerate(wheel_act[:n_trials_plot]):
+        #     #     save_path = join(root_folder, region) + '_animal_'+ str(idx_animal) + '_trial_' + str(idx_trial)+ '.png'
+        #     #     plot_wheel_movement(trial, 
+        #     #                         wheel_to_mm=wheel_to_mm, 
+        #     #                         sigma=gaussian_filter_sigma,
+        #     #                         title='wheel position x time Animal: ' + str(idx_animal) + ' Trial: ' + str(idx_trial), 
+        #     #                         save_path=save_path, save=is_save)
+
+    
+
+        
