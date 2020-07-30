@@ -9,6 +9,15 @@ from functions.filtering import *
 from os.path import join
 from argument_parser import argument_parser
 
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+
+from scipy.ndimage import gaussian_filter1d
+
+
+
+
+
 if __name__ == '__main__':
 
     # Argument Parser
@@ -35,6 +44,57 @@ if __name__ == '__main__':
     alldat = np.hstack((alldat, np.load('./steinmetz/steinmetz_part2.npz', allow_pickle=True)['dat']))
     print("Number of Recordings: {r_shape}".format(r_shape = alldat.shape))
     
+
+    teste = filter_trials_full_contrast(alldat, "VISp") #recordings_with_region( alldat, "VISp") 
+
+
+    filter_data_visp = filter_trials_full_contrast(alldat, "VISp") #recordings_with_region( alldat, "VISp")
+    # [
+    # mouse_name,
+    # mouse_spikes,
+    # mouse_regions,
+    # mouse_gocue,
+    # mouse_resptime,
+    # mouse_wheel,
+    # mouse_feedback,
+    # mouse_response,
+    # ]
+
+
+    # First define the model
+    log_reg = LogisticRegression(penalty="none")
+    cross_valid_k = 8 
+
+    region_neurons = []
+    mean_neurons_acc = []
+    neuron_choose = []
+
+    for animal_idx in range(filter_data_visp.shape[0]):
+        mean_neurons_acc = []
+        for neuron_idx in range(filter_data_visp[animal_idx][1].shape[0]):
+            
+
+            print(filter_data_visp[animal_idx][1].shape)
+            print(filter_data_visp[animal_idx][-1].shape)
+
+            X = filter_data_visp[animal_idx][1][neuron_idx] # spikes
+            y = filter_data_visp[animal_idx][-1] # response
+            
+            exit()
+
+
+            accuracies = cross_val_score(LogisticRegression(penalty='none', max_iter=200), X, y, cv=cross_valid_k) 
+            mean_neurons_acc.append(np.mean(accuracies))
+            print(f"neuron_idx {neuron_idx}:{filter_data_visp[animal_idx][1].shape[0]}, animal_idx: {animal_idx}:{filter_data_visp.shape[0]}")
+            #print(X.shape, y.shape, mean_neurons_acc)
+            
+        #exit()            
+        topk = 10
+        neuron_choose.append([np.asarray(mean_neurons_acc).argsort()[-topk:][::-1]])#)np.argmax(mean_neurons_acc))
+        print(neuron_choose)
+
+
+    exit()
     
     '''
     for region in regions:
@@ -56,7 +116,7 @@ if __name__ == '__main__':
             for sigma in sigmas:
                 save_path = join(root_folder, region) + '_average_activity_neurons_all_trials_' + str(sigma) + '.png'
                 plot_average_activity_neurons_all_trials(neurons_spks, region, sigma=sigma, save_path=save_path, save=is_save)
-    '''
+    
 
     
     for region in regions:
@@ -83,4 +143,4 @@ if __name__ == '__main__':
 
     
 
-        
+    '''
