@@ -95,8 +95,8 @@ def filter_trials_full_contrast(data, regions):
             mouse_resptime = dat["response_time"][contralateral_trials_idx]
             mouse_wheel = dat["wheel"][0][contralateral_trials_idx]
             mouse_feedback = dat["feedback_time"][contralateral_trials_idx]
-            mouse_stim_left = dat["contrast_left"][contralateral_trial_idx]
-            mouse_stim_right = dat["contrast_right"][contralateral_trial_idx] 
+            mouse_stim_left = dat["contrast_left"][contralateral_trials_idx]
+            mouse_stim_right = dat["contrast_right"][contralateral_trials_idx] 
             mouse_response = dat["response"][contralateral_trials_idx]
             cl_trials_data.append(
                 [

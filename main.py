@@ -64,6 +64,7 @@ if __name__ == '__main__':
     # First define the model
     log_reg = LogisticRegression(penalty="none")
     cross_valid_k = 8 
+    topk = 10
 
     region_neurons = []
     mean_neurons_acc = []
@@ -73,29 +74,25 @@ if __name__ == '__main__':
         mean_neurons_acc = []
         for neuron_idx in range(filter_data_visp[animal_idx][1].shape[0]):
             
-
-            print(filter_data_visp[animal_idx][1].shape)
-            print(filter_data_visp[animal_idx][-1].shape)
-
             X = filter_data_visp[animal_idx][1][neuron_idx] # spikes
             y = filter_data_visp[animal_idx][-1] # response
             
-            exit()
-
-
             accuracies = cross_val_score(LogisticRegression(penalty='none', max_iter=200), X, y, cv=cross_valid_k) 
             mean_neurons_acc.append(np.mean(accuracies))
             print(f"neuron_idx {neuron_idx}:{filter_data_visp[animal_idx][1].shape[0]}, animal_idx: {animal_idx}:{filter_data_visp.shape[0]}")
-            #print(X.shape, y.shape, mean_neurons_acc)
-            
-        #exit()            
-        topk = 10
-        neuron_choose.append([np.asarray(mean_neurons_acc).argsort()[-topk:][::-1]])#)np.argmax(mean_neurons_acc))
-        print(neuron_choose)
+        
+        
+        ####################### DEBUG ACC ########################################
+        # print("---------------------------")
+        # print(f"animal_idx: {animal_idx}:{filter_data_visp.shape[0]}")
+        # a = np.asarray(mean_neurons_acc)
+        # for idx in np.argsort(np.asarray(mean_neurons_acc))[-topk:][::-1]:
+        #     print(idx, a[idx])
+        # neuron_choose.append([np.asarray(mean_neurons_acc).argsort()[-topk:][::-1]])
+        # print(neuron_choose)
+        # print("---------------------------")
 
 
-    exit()
-    
     '''
     for region in regions:
         rwr = recordings_with_region(alldat, region)
