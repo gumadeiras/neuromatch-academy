@@ -48,12 +48,17 @@ def get_times_for_neuron(neurons_spks, times, stim_onset=50):
     return neurons_responses
 
 
-def filter_contralateral_trials_full_contrast(data, regions):
+def filter_contralateral_trials_full_contrast(data, regions, c_left=0, c_right=1, everything=False):
     cl_trials_data = []
+    neuron_idxs = []
     for dat in data:
         region_filter_idx = np.where([(dat["brain_area"][idx] in regions) for idx, __ in enumerate(dat["brain_area"])])[0]
         if any(region_filter_idx):
-            contralateral_trials_idx = np.where((dat["contrast_left"] == 0) & (dat["contrast_right"] == 1))[0]
+            if everything is True:
+                contralateral_trials_idx = np.arange(len(dat["contrast_left"]))
+            else:
+                contralateral_trials_idx = np.where((dat["contrast_left"] == c_left) & (dat["contrast_right"] == c_right))[0]
+            neuron_idxs.append(contralateral_trials_idx)
             mouse_name = dat["mouse_name"]
             # filter neurons by regions
             mouse_spikes = dat["spks"][region_filter_idx]
@@ -64,6 +69,8 @@ def filter_contralateral_trials_full_contrast(data, regions):
             mouse_resptime = dat["response_time"][contralateral_trials_idx]
             mouse_wheel = dat["wheel"][0][contralateral_trials_idx]
             mouse_feedback = dat["feedback_time"][contralateral_trials_idx]
+            mouse_right = dat["contrast_right"][contralateral_trials_idx]
+            mouse_left = dat["contrast_left"][contralateral_trials_idx]
             mouse_response = dat["response"][contralateral_trials_idx]
             cl_trials_data.append(
                 [
@@ -74,10 +81,12 @@ def filter_contralateral_trials_full_contrast(data, regions):
                     mouse_resptime,
                     mouse_wheel,
                     mouse_feedback,
+                    mouse_right,
+                    mouse_left,
                     mouse_response,
                 ]
             )
-    return np.asarray(cl_trials_data)
+    return np.asarray(cl_trials_data), np.asarray(neuron_idxs)
 
 
 def filter_contralateral_by_region(data, region):
